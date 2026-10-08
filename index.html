@@ -3,11 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cloudflare Website</title>
+    <title>Firebase Notes</title>
 </head>
+
 <body>
-    <h1>Hello World!</h1>
-    <p>This website is hosted using Cloudflare Pages.</p>
-    <p>Created as part of my cloud computing assignment.</p>
+
+    <h1>My Firebase Notes</h1>
+
+    <input type="text" id="noteInput" placeholder="Write a note...">
+    <button id="addButton">Add Note</button>
+
+    <h2>Notes</h2>
+
+    <ul id="notesList"></ul>
+
+    <script type="module">
+        <script type="module">
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs
+    } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyDcKadidVmKTV7vfF8j3unH1kR-68-AuLg",
+  authDomain: "my-firebase-teht.firebaseapp.com",
+  projectId: "my-firebase-teht",
+  storageBucket: "my-firebase-teht.firebasestorage.app",
+  messagingSenderId: "617217127294",
+  appId: "1:617217127294:web:59d8be695c9e2878f7392f"
+};
+
+
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+
+
+    const noteInput = document.getElementById("noteInput");
+    const addButton = document.getElementById("addButton");
+    const notesList = document.getElementById("notesList");
+
+
+    addButton.addEventListener("click", async () => {
+
+        const noteText = noteInput.value.trim();
+
+        if (noteText === "") {
+            return;
+        }
+
+        try {
+
+            await addDoc(collection(db, "notes"), {
+                text: noteText
+            });
+
+            noteInput.value = "";
+
+            loadNotes();
+
+        } catch (error) {
+            console.error("Error adding note:", error);
+        }
+
+    });
+
+
+    async function loadNotes() {
+
+        notesList.innerHTML = "";
+
+        try {
+
+            const querySnapshot = await getDocs(collection(db, "notes"));
+
+            querySnapshot.forEach((doc) => {
+
+                const li = document.createElement("li");
+
+                li.textContent = doc.data().text;
+
+                notesList.appendChild(li);
+
+            });
+
+        } catch (error) {
+
+            console.error("Error loading notes:", error);
+
+        }
+    }
+
+
+    loadNotes();
+
+</script>
+    </script>
+
 </body>
 </html>
